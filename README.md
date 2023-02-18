@@ -9,4 +9,4 @@ Some scripts for efficiency.
     mysql_insert_sqlfile.py: This script is used to read the SQL file and insert the insert statement into the MySQL database. At the same time, the script can display a progress bar, and output the number of data records inserted successfully and failed to the file.
 
 ### Shell
-    init_centos.sh: 
+    init_centos.sh: This script is used to initialization the CentOS system. You should choice the function you need.
