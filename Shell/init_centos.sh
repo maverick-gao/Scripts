@@ -6,8 +6,9 @@
 
 # Function to display current time and kernel information
 function show_info {
+    echo "System info:"
     echo "Current time: $(date)"
-    echo "Kernel information: $(uname -a)"
+    echo "Kernel information: $(uname -ar)"
 }
 
 # Function to set up the system with user inputs
@@ -55,7 +56,7 @@ function install_basic_apps_and_sync_time() {
 }
 
 # Function to install Java and configure environment variables
-install_java() {
+ function install_java() {
   # Download Java archive
   cd /opt
   curl -LO https://download.oracle.com/otn-pub/java/jdk/8u202-b08/1961070e4c9b4e26a04e7f5a083f551e/jdk-8u202-linux-x64.tar.gz -H 'Cookie: oraclelicense=accept-securebackup-cookie'
@@ -139,17 +140,43 @@ function display_menu {
     echo "----------------------------------------"
     echo "         CentOS Initialization          "
     echo "----------------------------------------"
+    show_info
+    echo " "
     echo "Please select an option:"
-    echo "1. Display system information"
-    echo "2. Set up the system"
-    echo "3. Exit"
+    echo "1. Set up the system"
+    echo "2. Configure aliyun source"
+    echo "3. Install basic apps and sync time"
+    echo "4. Install java"
+    echo "5. Kernel tuning"
+    echo "6. History setting"
+    echo "7. SSH timesout"
+    echo "8. Disable selinux"
+    echo "9. Set system limit"
+    echo "10. TCP/IP optimization"
+    echo "11. Exit"
     read -p "Enter your choice: " choice
     case $choice in
-        1) show_info
+        1) setup_system
            ;;
-        2) setup_system
+        2) configure_aliyun_source
            ;;
-        3) exit 0
+        3) install_basic_apps_and_sync_time
+           ;;
+        4) install_java
+           ;;
+        5) kernel_tuning
+           ;;
+        6) history_settings
+           ;;
+        7) ssh_timeout
+           ;;
+        8) disable_selinux
+           ;;
+        9) set_system_limit
+           ;;
+        10) tcp_ip_optimization
+           ;;
+        11) exit 0
            ;;
         *) echo "Invalid choice. Please try again."
            ;;
