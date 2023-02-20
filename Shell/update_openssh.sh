@@ -4,7 +4,7 @@
 #!/bin/bash
 
 # 设置变量
-backup_dir="/tmp/ssh-backup-$(date +%Y%m%d%H%M%S)"
+backup_dir="/etc/ssh-backup-$(date +%Y%m%d%H%M%S)"
 ssh_config_file="/etc/ssh/sshd_config"
 telnet_config_file="/etc/xinetd.d/telnet"
 
@@ -30,7 +30,7 @@ case $choice in
   1)
     # 下载openssh升级包
     echo "正在下载openssh升级包..."
-    yum install -y --downloadonly --downloaddir=. openssh-server openssh-clients
+    yum install -y --downloadonly --downloaddir=. openssh-server openssh-clients 
     echo "openssh升级包下载完成"
     ;;
   2)
