@@ -2,6 +2,7 @@
 # Version:  V1.0 2023.02.17
 #           V1.1 2023.02.17
 #           V1.3 2023.02.18
+#           V1.4 2023.02.21 Add conn.commit() function
 
 import pymysql
 import sys
@@ -61,6 +62,8 @@ with open(filename, 'r', encoding='utf-8') as f:
         sys.stdout.write(f"\rProgress: [{progress * '#'}{(100 - progress) * ' '}] {progress}%")
         sys.stdout.flush()
 
+    # 此处需要提交才能实现插入功能
+    conn.commit()
     # 关闭数据库连接
     cursor.close()
     conn.close()
