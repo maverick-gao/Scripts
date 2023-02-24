@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  mysql:
+    container_name: mysql-server
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "zabbix"
+      MYSQL_PASSWORD: "zabbix"
+      MYSQL_ROOT_PASSWORD: "zabbix"
+    ports:
+      - "13306:3306"
+    command: --character-set-server=utf8 --collation-server=utf8_bin
+
+  zabbix-server:
+    container_name: zabbix-server-mysql
+    image: zabbix/zabbix-server-mysql:centos-4.4.4
+    environment:
+      DB_SERVER_HOST: "mysql-server"
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "zabbix"
+      MYSQL_PASSWORD: "zabbix"
+      MYSQL_ROOT_PASSWORD: "zabbix"
+    ports:
+      - "10051:10051"
+    links:
+      - mysql
+    depends_on:
+      - mysql
+
+  zabbix-web:
+    container_name: zabbix-web-nginx-mysql
+    image: zabbix/zabbix-web-nginx-mysql:centos-4.4.4
+    environment:
+      DB_SERVER_HOST: "mysql-server"
+      MYSQL_DATABASE: "zabbix"
+      MYSQL_USER: "zabbix"
+      MYSQL_PASSWORD: "zabbix"
+      MYSQL_ROOT_PASSWORD: "zabbix"
+      PHP_TZ: "Asia/Singapore"
+    ports:
+      - "18080:80"
+    links:
+      - mysql
+      - zabbix-server
+    depends_on:
+      - mysql
+      - zabbix-server
