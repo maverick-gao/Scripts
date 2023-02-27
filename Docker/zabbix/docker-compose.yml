@@ -1,49 +1,53 @@
-version: '3'
-
+version: '3.8'
 services:
-  mysql:
-    container_name: mysql-server
+  mysql-server:
     image: mysql:5.7
+    container_name: mysql-server
     environment:
-      MYSQL_DATABASE: "zabbix"
-      MYSQL_USER: "zabbix"
-      MYSQL_PASSWORD: "zabbix"
-      MYSQL_ROOT_PASSWORD: "zabbix"
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix
+      MYSQL_ROOT_PASSWORD: zabbix
     ports:
       - "13306:3306"
-    command: --character-set-server=utf8 --collation-server=utf8_bin
+    volumes:
+      - /path/to/host/mysql/data:/var/lib/mysql
+      - /path/to/host/mysql/conf.d:/etc/mysql/conf.d
+      - /path/to/host/mysql/mysql.conf.d/:/etc/mysql/mysql.conf.d
+      - /etc/localtime:/etc/localtime
+    command: ["mysqld", "--character-set-server=utf8", "--collation-server=utf8_bin"]
 
-  zabbix-server:
-    container_name: zabbix-server-mysql
+  zabbix-server-mysql:
     image: zabbix/zabbix-server-mysql:centos-4.4.4
+    container_name: zabbix-server-mysql
+    links:
+      - mysql-server:mysql
     environment:
-      DB_SERVER_HOST: "mysql-server"
-      MYSQL_DATABASE: "zabbix"
-      MYSQL_USER: "zabbix"
-      MYSQL_PASSWORD: "zabbix"
-      MYSQL_ROOT_PASSWORD: "zabbix"
+      DB_SERVER_HOST: mysql-server
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix
+      MYSQL_ROOT_PASSWORD: zabbix
     ports:
       - "10051:10051"
-    links:
-      - mysql
-    depends_on:
-      - mysql
+    volumes:
+      - /etc/localtime:/etc/localtime
 
-  zabbix-web:
-    container_name: zabbix-web-nginx-mysql
+  zabbix-web-nginx-mysql:
     image: zabbix/zabbix-web-nginx-mysql:centos-4.4.4
+    container_name: zabbix-web-nginx-mysql
+    links:
+      - mysql-server:mysql
+      - zabbix-server-mysql:zabbix-server
     environment:
-      DB_SERVER_HOST: "mysql-server"
-      MYSQL_DATABASE: "zabbix"
-      MYSQL_USER: "zabbix"
-      MYSQL_PASSWORD: "zabbix"
-      MYSQL_ROOT_PASSWORD: "zabbix"
-      PHP_TZ: "Asia/Singapore"
+      DB_SERVER_HOST: mysql-server
+      MYSQL_DATABASE: zabbix
+      MYSQL_USER: zabbix
+      MYSQL_PASSWORD: zabbix
+      MYSQL_ROOT_PASSWORD: zabbix
+      PHP_TZ: Asia/Shanghai
     ports:
       - "18080:80"
-    links:
-      - mysql
-      - zabbix-server
-    depends_on:
-      - mysql
-      - zabbix-server
+    volumes:
+      - /etc/localtime:/etc/localtime
+    privileged: true

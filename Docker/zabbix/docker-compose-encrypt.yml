@@ -1,8 +1,8 @@
 version: '3.3'
-
 services:
   mysql-server:
     image: mysql:5.7
+    container_name: mysql-server
     environment:
       MYSQL_DATABASE_FILE: /run/secrets/mysql_database
       MYSQL_USER_FILE: /run/secrets/mysql_user
@@ -15,10 +15,18 @@ services:
       - mysql_root_password
     ports:
       - "13306:3306"
+    volumes:
+      - /path/to/host/mysql/data:/var/lib/mysql
+      - /path/to/host/mysql/conf.d:/etc/mysql/conf.d
+      - /path/to/host/mysql/mysql.conf.d/:/etc/mysql/mysql.conf.d
+      - /etc/localtime:/etc/localtime
     command: --character-set-server=utf8 --collation-server=utf8_bin
 
   zabbix-server-mysql:
     image: zabbix/zabbix-server-mysql:centos-4.4.4
+    container_name: zabbix-server-mysql
+    links:
+      - mysql-server:mysql
     environment:
       DB_SERVER_HOST: mysql-server
       MYSQL_DATABASE_FILE: /run/secrets/mysql_database
@@ -32,16 +40,22 @@ services:
       - mysql_root_password
     ports:
       - "10051:10051"
+    volumes:
+      - /etc/localtime:/etc/localtime
 
   zabbix-web-nginx-mysql:
     image: zabbix/zabbix-web-nginx-mysql:centos-4.4.4
+    container_name: zabbix-server-nginx-mysql
+    links:
+      - mysql-server:mysql
+      - zabbix-server-mysql:zabbix-server
     environment:
       DB_SERVER_HOST: mysql-server
       MYSQL_DATABASE_FILE: /run/secrets/mysql_database
       MYSQL_USER_FILE: /run/secrets/mysql_user
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      PHP_TZ: "Asia/Singapore"
+      PHP_TZ: "Asia/Shanghai"
     secrets:
       - mysql_database
       - mysql_user
@@ -49,6 +63,9 @@ services:
       - mysql_root_password
     ports:
       - "18080:80"
+    volumes:
+      - /etc/localtime:/etc/localtime
+    privileged: true
 
 secrets:
   mysql_database:

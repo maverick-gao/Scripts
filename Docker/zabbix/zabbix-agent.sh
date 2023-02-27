@@ -18,7 +18,6 @@ tar -zxvf zabbix-agent-*.tar.gz -C /opt/zabbix
 # 修改zabbix_agentd.conf文件
 sed -i "s/Server=127.0.0.1/Server=${server_ip}/g" /opt/zabbix/conf/zabbix_agentd.conf
 sed -i "s/ServerActive=127.0.0.1/ServerActive=${active_addr}/g" /opt/zabbix/conf/zabbix_agentd.conf
-sed -i "s/#\s*LogFile=\s*/LogFile=\/opt\/zabbix\/zabbix_agent.log/g" /opt/zabbix/conf/zabbix_agentd.conf
 
 # 配置LogFile的大小为10M
 sed -i "s/#\s*LogFileSize=1/LogFileSize=10/g" /opt/zabbix/conf/zabbix_agentd.conf

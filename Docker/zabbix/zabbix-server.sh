@@ -16,6 +16,10 @@ docker run --name mysql-server -t \
 -e MYSQL_PASSWORD="zabbix" \
 -e MYSQL_ROOT_PASSWORD="zabbix" \
 -p 13306:3306 \
+-v /path/to/host/mysql/data:/var/lib/mysql \
+-v /path/to/host/mysql/conf.d:/etc/mysql/conf.d \
+-v /path/to/host/mysql/mysql.conf.d/:/etc/mysql/mysql.conf.d \
+-v /etc/localtime:/etc/localtime \
 -d mysql:5.7 \
 --character-set-server=utf8 --collation-server=utf8_bin
 
@@ -27,6 +31,7 @@ docker run --name zabbix-server-mysql -t \
 -e MYSQL_PASSWORD="zabbix" \
 -e MYSQL_ROOT_PASSWORD="zabbix" \
 -p 10051:10051 \
+-v /etc/localtime:/etc/localtime \
 -d \
 zabbix/zabbix-server-mysql:centos-4.4.4
 
@@ -40,5 +45,6 @@ docker run --privileged --name zabbix-web-nginx-mysql -t \
 -e MYSQL_ROOT_PASSWORD="zabbix" \
 -e PHP_TZ="Asia/Singapore" \
 -p 18080:80 \
+-v /etc/localtime:/etc/localtime \
 -d \
 zabbix/zabbix-web-nginx-mysql:centos-4.4.4
