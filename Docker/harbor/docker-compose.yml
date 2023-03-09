@@ -1,0 +1,47 @@
+version: '2.4'
+ 
+services:
+  # Harbor web UI
+  harbor:
+    hostname: harbor.example.com  # 修改为你的域名或IP
+    image: harbor/harbor:latest
+    restart: always
+    # 将80和443端口暴露到外部，可以通过这两个端口访问Harbor
+    ports:
+      - 10880:80
+      - 10443:443
+    volumes:
+      # Harbor的配置文件夹，其中包含了Harbor的配置文件、证书、私钥等
+      - /data/harbor/config:/etc/harbor
+      # Harbor的数据文件夹，其中包含了上传的镜像、Harbor日志等
+      - /data/harbor/data:/data
+      # Harbor的证书文件夹，需要挂载私钥和证书文件，否则无法启动
+      - /data/harbor/certs:/etc/ssl/private/:ro
+      - /data/harbor/certs:/etc/ssl/certs/:ro
+    # 环境变量配置，按需修改
+    environment:
+      # 这里设置Harbor的外部访问URL
+      - HARBOR_WEB_URL=https://harbor.example.com
+      # 这里设置Harbor的数据目录
+      - DATABASE_PASSWORD=password
+      - HARBOR_ADMIN_PASSWORD=password
+      
+  # PostgreSQL数据库服务
+  database:
+    image: postgres:12.4
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password  # 设置数据库密码
+      POSTGRES_DB: registry
+      POSTGRES_USER: registry
+    volumes:
+      # 数据库持久化存储的目录，需要在宿主机上创建并授权
+      - /data/harbor/database:/var/lib/postgresql/data
+
+  # Redis缓存服务
+  redis:
+    image: redis:5.0.5-alpine
+    restart: always
+    volumes:
+      # 缓存持久化存储的目录，需要在宿主机上创建并授权
+      - /data/harbor/redis:/data
